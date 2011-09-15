@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Client(models.Model):
@@ -23,6 +24,10 @@ class Campaign(models.Model):
     ends = models.DateTimeField()    
     active = models.BooleanField()
     total_units = models.PositiveIntegerField(default=0)
+
+    @property
+    def facebook_app_id(self):
+        return settings.FACEBOOK_APP_ID
 
 
 class RefererBlock(models.Model):
