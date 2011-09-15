@@ -104,9 +104,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'taggit',
     'south',
-    'gravatar',
     'django_jenkins',
     'ajax',
+    'apps.rocket',
 )
 
 # Default From header for outbound emails

@@ -105,9 +105,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'taggit',
     'south',
-    'gravatar',
     'django_jenkins',
     'ajax',
+    'apps.rocket',
 )
 
 # Default From header for outbound emails
@@ -135,7 +135,7 @@ SESSION_COOKIE_NAME = 'launcher'
 SOUTH_TESTS_MIGRATE = False
 
 # Only run Jenkins report generation on these apps.
-PROJECT_APPS = ('wasatch', 'accounts',)
+PROJECT_APPS = ('rocket',)
 
 # Which Jenkins reports/tasks to run.
 JENKINS_TASKS = ('django_jenkins.tasks.run_pep8',
