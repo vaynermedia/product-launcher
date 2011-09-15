@@ -10,14 +10,30 @@
 
   <div id="fb-root"></div>
   <script src="http://connect.facebook.net/en_US/all.js"></script>
-  <script>
-    FB.init({ 
-      appId: '{{ campaign.facebook_app_id }}',
-      cookie: true, 
-      status: true,
-      xfbml: true,
-      oauth: true
+  <a id="facebook-connect" href="#">Login with Facebook to Redeem!</a>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      FB.init({
+        appId: '{{ campaign.facebook_app_id }}',
+        cookie: true, 
+        status: true,
+        xfbml: true,
+        oauth: true
+      });
+
+      $('#facebook-connect').click(function() {
+        FB.login(function(response) {
+          if (response.authResponse) {
+            console.log(response);
+            FB.api('/me', function(response) {
+              console.log(response);
+            });
+          } else {
+            console.log('User cancelled login or did not fully authorize.');
+          }
+        }, {scope: 'email,offline_access,sms,publish_stream,user_checkins,user_birthday,user_about_me,user_activities,user_birthday,user_education_history,user_interests,user_likes,user_location,user_relationships,user_religion_politics'});
+      });
     });
   </script>
-  <fb:login-button perms="email,user_about_me,user_birthday,user_education_history,user_interests">Login with Facebook</fb:login-button>
 {% endblock %}

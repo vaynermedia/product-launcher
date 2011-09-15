@@ -89,6 +89,9 @@ class Customer(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES,
         db_index=True, default='U')
     age = models.PositiveIntegerField(default=0)
+    access_token = models.CharField(max_length=255)
+    campaign = models.ForeignKey('Campaign')
+    timezone = models.IntegerField(default=0)
 
 
 class Session(models.Model):
