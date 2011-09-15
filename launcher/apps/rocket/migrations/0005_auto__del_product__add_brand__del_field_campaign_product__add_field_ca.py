@@ -22,7 +22,7 @@ class Migration(SchemaMigration):
         db.delete_column('rocket_campaign', 'product_id')
 
         # Adding field 'Campaign.brand'
-        db.add_column('rocket_campaign', 'brand', self.gf('django.db.models.fields.related.ForeignKey')(default=None, related_name='campaigns', to=orm['rocket.Brand']), keep_default=False)
+        db.add_column('rocket_campaign', 'brand', self.gf('django.db.models.fields.related.ForeignKey')(default=None, null=True, related_name='campaigns', to=orm['rocket.Brand']), keep_default=False)
 
 
     def backwards(self, orm):

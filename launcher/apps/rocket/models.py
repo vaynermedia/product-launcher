@@ -17,7 +17,8 @@ class Brand(models.Model):
 
 
 class Campaign(models.Model):
-    brand = models.ForeignKey('Brand', related_name='campaigns')
+    brand = models.ForeignKey('Brand', related_name='campaigns',
+        blank=True, null=True, default=None)
     begins = models.DateTimeField()
     ends = models.DateTimeField()    
     active = models.BooleanField()
@@ -85,5 +86,5 @@ class Customer(models.Model):
 
 
 class Session(models.Model):
-    customer = models.ForeignKey('Customer', blank=True, null=True) 
+    customer = models.ForeignKey('Customer', blank=True, null=True)
     last_step = models.ForeignKey('Step', blank=True, null=True, default=None)
