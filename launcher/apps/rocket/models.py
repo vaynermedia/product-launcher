@@ -3,7 +3,6 @@ from django.db import models
 
 class Client(models.Model):
     name = models.CharField(max_length=100)
-    total_units = models.PositiveIntegerField(default=0)
 
     def __unicode__(self):
         return name
@@ -22,6 +21,7 @@ class Campaign(models.Model):
     begins = models.DateTimeField()
     ends = models.DateTimeField()    
     active = models.BooleanField()
+    total_units = models.PositiveIntegerField(default=0)
 
 
 class RefererBlock(models.Model):
