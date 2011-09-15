@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.rocket.models import Client, Brand, Campaign, RefererBlock,
+from apps.rocket.models import Client, Brand, Campaign, RefererBlock, \
     Step, Decision, Customer, Session
 
 
@@ -28,7 +28,7 @@ class DecisionAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'step', 'goto', 'rules', 'match_all',)
+    list_display = ('id', 'first_name', 'last_name', 'email', 'gender',)
 
 
 class SessionAdmin(admin.ModelAdmin):
