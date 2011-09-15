@@ -5,14 +5,15 @@ class Client(models.Model):
     name = models.CharField(max_length=100)
 
     def __unicode__(self):
-        return name
+        return self.name
 
 
 class Brand(models.Model):
     name = models.CharField(max_length=100)
+    client = models.ForeignKey('Client')
 
     def __unicode__(self):
-        return name
+        return self.name
 
 
 class Campaign(models.Model):

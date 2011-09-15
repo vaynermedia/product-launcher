@@ -4,7 +4,7 @@ from apps.rocket.models import Client, Brand, Campaign, RefererBlock, \
 
 
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'total_units',)
+    list_display = ('id', 'name',)
 
 
 class BrandAdmin(admin.ModelAdmin):
@@ -12,7 +12,7 @@ class BrandAdmin(admin.ModelAdmin):
 
 
 class CampaignAdmin(admin.ModelAdmin):
-    list_display = ('id', 'brand', 'begins', 'ends', 'active',)
+    list_display = ('id', 'brand', 'begins', 'ends', 'active', 'total_units',)
 
 
 class RefererBlockAdmin(admin.ModelAdmin):
