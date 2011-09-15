@@ -8,7 +8,6 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^/?$', 'launcher.apps.rocket.views.home', name='home'),
-    url('^channel.html$', direct_to_template, {'template', 'channel.html'}),
     url(r'^rocket/', include('launcher.apps.rocket.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
