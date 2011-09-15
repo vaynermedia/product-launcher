@@ -5,15 +5,22 @@ class Client(models.Model):
     name = models.CharField(max_length=100)
     total_units = models.PositiveIntegerField(default=0)
 
+    def __unicode__(self):
+        return name
 
-class Product(models.Model):
+
+class Brand(models.Model):
     name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return name
 
 
 class Campaign(models.Model):
-    product = models.ForeignKey('Product', related_name='campaigns')
+    brand = models.ForeignKey('Brand', related_name='campaigns')
     begins = models.DateTimeField()
     ends = models.DateTimeField()    
+    active = models.BooleanField()
 
 
 class RefererBlock(models.Model):
@@ -79,3 +86,4 @@ class Customer(models.Model):
 
 class Session(models.Model):
     customer = models.ForeignKey('Customer', blank=True, null=True) 
+    last_step = models.ForeignKey('Step', blank=True, null=True, default=None)
