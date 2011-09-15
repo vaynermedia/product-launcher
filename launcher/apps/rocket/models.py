@@ -3,6 +3,7 @@ from django.db import models
 
 class Client(models.Model):
     name = models.CharField(max_length=100)
+    total_units = models.PositiveIntegerField(default=0)
 
 
 class Product(models.Model):
@@ -15,29 +16,49 @@ class Campaign(models.Model):
     ends = models.DateTimeField()    
 
 
+class RefererBlock(models.Model):
+    campaign = models.ForeignKey('Campaign')
+    match = models.CharField(max_length=100)
+
+
 class Step(models.Model):
     name = models.CharField(max_length=100)
     sort = models.PositiveIntegerField()
     campaign = models.ForeignKey('Campaign', related_name='steps')
 
-
-class Rule(models.Model):
-    BEHAVIOR_CHOICES = (
-        ('MustBeAdultRule', 'Must be Adult'),
-        ('MustBeManRule', 'Must be a Man'),
-        ('MustBeWomanRule', 'Must be a Woman'),
-    )
-
-    name = models.CharField(max_length=100)
-    behavior = models.CharField(max_length=10, choices=BEHAVIOR_CHOICES)
-    active = models.BooleanField(default=True)
+    def next(self):
+        pass
 
 
 class Decision(models.Model):
     step = models.ForeignKey('Step', related_name='decisions')
-    rule = models.ForeignKey('Rule')
+    rules = models.CharField(max_length=100, default='')
     goto = models.ForeignKey('Step')
     match_all = models.BooleanField(default=True)
+
+    def parse_rules(self):
+        parts = self.rules.strip().split('|')
+        rules = []
+        for p in parts:
+            args = {}
+            if '?' in p:
+                rule, args_string = p.split('?')
+                if args_string:
+                    for a in args_string.split('&'):
+                        var, val = a.split('=')
+                        if ',' in val:
+                            val = val.split(',') 
+
+                        args[var] = val
+            else:
+                rule = p.strip()
+
+            rules.append({
+                'rule': rule,
+                'args': args
+            })
+
+        return rules
 
 
 class Customer(models.Model):
@@ -54,3 +75,7 @@ class Customer(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES,
         db_index=True, default='U')
     age = models.PositiveIntegerField(default=0)
+
+
+class Session(models.Model):
+    customer = models.ForeignKey('Customer', blank=True, null=True) 
