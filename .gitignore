@@ -2,3 +2,4 @@
 *.swp
 *.sqlite3
 launcher/apps/ajax
+settings.py

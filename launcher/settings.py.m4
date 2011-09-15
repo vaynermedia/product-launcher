@@ -148,6 +148,9 @@ JENKINS_TEST_RUNNER = 'django_jenkins.runner.CITestSuiteRunner'
 # Don't send 404 emails.
 SEND_BROKEN_LINK_EMAILS = False
 
+FACEBOOK_APP_ID = '__FACEBOOK_APP_ID__'
+FACEBOOK_APP_SECRET = '__FACEBOOK_APP_SECRET__'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

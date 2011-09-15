@@ -1,1 +1,19 @@
-You are viewing the "{{ campaign.brand }}" campaign for {{ campaign.brand.client }}.
+{% extends "rocket/campaign/base.html" %}
+
+{% block title %}Get free {{ campaign.brand }}!{% endblock %}
+
+{% block content %}
+  <div>
+    You are viewing the "{{ campaign.brand }}" campaign for {{ campaign.brand.client }}. We're giving away {{ campaign.total_units }}!
+  </div>
+
+
+  <div id="fb-root"></div>
+  <script src="http://connect.facebook.net/en_US/all.js"></script>
+  <script>
+    FB.init({ 
+      appId:'YOUR_APP_ID', cookie:true, 
+      status:true, xfbml:true 
+    });
+  </script>
+{% endblock %}
