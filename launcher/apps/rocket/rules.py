@@ -1,6 +1,10 @@
 class BaseRule(object):
     def __init__(self, session, **kwargs):
         self.session = session
+
+        if not self.session.customer:
+            raise ValueError('Sessions must have customers.')
+
         self.arguments = kwargs
 
     def __getattr__(self, name):
@@ -12,12 +16,16 @@ class BaseRule(object):
 
 class MustHaveAgeRangeRule(BaseRule):
     def match(self):
-        return True
+        if self.session.customer.age >= self.range[0] and \
+            self.session.customer.age <= self.range[1]:
+            return True
+
+        return False
 
 
 class MustBeAdultRule(BaseRule):
     def match(self):
-        if self.session.customer and self.session.customer.age > 18:
+        if self.session.customer.age >= 18:
             return True
         
         return False
@@ -25,7 +33,7 @@ class MustBeAdultRule(BaseRule):
 
 class MustBeManRule(BaseRule):
     def match(self):
-        if self.session.customer and self.session.customer.gender == 'M':
+        if self.session.customer.gender == 'M':
             return True
 
         return False
@@ -33,7 +41,7 @@ class MustBeManRule(BaseRule):
 
 class MustBeWomanRule(BaseRule):
     def match(self):
-        if self.session.customer and self.session.customer.gender == 'F':
+        if self.session.customer.gender == 'F':
             return True
 
         return False

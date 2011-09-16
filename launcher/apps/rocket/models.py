@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from apps.rocket import rules
 
 
 class Client(models.Model):
@@ -24,6 +25,7 @@ class Campaign(models.Model):
     ends = models.DateTimeField()    
     active = models.BooleanField()
     total_units = models.PositiveIntegerField(default=0)
+    google_analytics_code = models.CharField(max_length=100, default='')
 
     @property
     def facebook_app_id(self):
@@ -40,15 +42,20 @@ class Step(models.Model):
     sort = models.PositiveIntegerField()
     campaign = models.ForeignKey('Campaign', related_name='steps')
 
-    def next(self):
-        pass
+    def next(self, session):
+        for d in Decision.objects.filter(step=self).order_by('sort'):
+            pass
 
 
 class Decision(models.Model):
+    class Rejected(Exception):
+        pass
+
     step = models.ForeignKey('Step', related_name='decisions')
     rules = models.CharField(max_length=100, default='')
     goto = models.ForeignKey('Step')
     match_all = models.BooleanField(default=True)
+    sort = models.PositiveIntegerField(default=0)
 
     def parse_rules(self):
         parts = self.rules.strip().split('|')
@@ -73,6 +80,19 @@ class Decision(models.Model):
             })
 
         return rules
+
+    def inquire(self, session):
+        for r in self.parse_rules():
+            try:
+                cls = getattr(rules, r)
+            except AttributeError:
+                continue # Ignore invalid rules for now.
+        
+            rule = cls(session, **r['args'])
+            if not rule.match():
+                raise Decision.Rejected()
+ 
+        return True
 
 
 class Customer(models.Model):
