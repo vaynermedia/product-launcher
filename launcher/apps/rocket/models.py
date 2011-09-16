@@ -82,16 +82,24 @@ class Decision(models.Model):
         return rules
 
     def inquire(self, session):
-        for r in self.parse_rules():
+        rules_matched = 0
+        parsed_rules = self.parse_rules()
+        for r in parsed_rules:
             try:
-                cls = getattr(rules, r)
+                cls = getattr(rules, r['rule'])
             except AttributeError:
                 continue # Ignore invalid rules for now.
         
             rule = cls(session, **r['args'])
             if not rule.match():
-                raise Decision.Rejected()
+                rules_matched += 1 
  
+        # Check to see if we're a decision requiring all rules to be matched
+        # or if none of the rules matched up.
+        if (self.match_all and rules_matched != len(parsed_rules)) or \
+            rules_matched == 0:
+            raise Decision.Rejected()
+        
         return True
 
 
