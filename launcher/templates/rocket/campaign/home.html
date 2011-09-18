@@ -3,6 +3,7 @@
 {% block title %}Get free {{ campaign.brand }}!{% endblock %}
 
 {% block content %}
+  <input type="hidden" id="campaign" value="{{ campaign.pk }}" />
   <div>
     You are viewing the "{{ campaign.brand }}" campaign for {{ campaign.brand.client }}. We're giving away {{ campaign.total_units }}!
   </div>
@@ -13,6 +14,24 @@
   <a id="facebook-connect" href="#">Login with Facebook to Redeem!</a>
 
   <script type="text/javascript">
+    function calculate_age(birth_month, birth_day, birth_year) {
+      var today_date = new Date();
+      var today_year = today_date.getFullYear();
+      var today_month = today_date.getMonth();
+      var today_day = today_date.getDate();
+      var age = today_year - birth_year;
+
+      if (today_month < (birth_month - 1)) {
+        age--;
+      }
+
+      if (((birth_month - 1) == today_month) && (today_day < birth_day)) { 
+        age--;
+      }
+
+      return age;
+    }
+
     $(document).ready(function() {
       FB.init({
         appId: '{{ campaign.facebook_app_id }}',
@@ -25,9 +44,36 @@
       $('#facebook-connect').click(function() {
         FB.login(function(response) {
           if (response.authResponse) {
-            console.log(response);
-            FB.api('/me', function(response) {
-              console.log(response);
+            FB.api('/me', function(profile) {
+              console.log(profile);
+              var gender = 'U';
+              if (profile.gender.toLowerCase() == 'male') {
+                gender = 'M';
+              } else if (profile.gender.toLowerCase() == 'female') {
+                gender = 'F';
+              }
+
+              parts = profile.birthday.split('/');
+
+              $.ajax('/ajax/rocket/customer.json', {
+                'type': 'POST',
+                'dataType': 'json',
+                'data': {
+                  'first_name': profile.first_name,
+                  'last_name': profile.last_name,
+                  'email': profile.email,
+                  'uid': profile.id,
+                  'gender': gender,
+                  'age': calculate_age(parts[0], parts[1], parts[2]),
+                  'access_token': response.authResponse.accessToken,
+                  'campaign': $('#campaign').val(),
+                  'timezone': profile.timezone,
+                  'meta': JSON.stringify(profile)
+                },
+                'success': function(data, textStatus, jqXHR) {
+                  alert('You have been assimilated.');
+                }
+              });
             });
           } else {
             console.log('User cancelled login or did not fully authorize.');
