@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 from apps.rocket import rules
+from django_extensions.db.fields.json import JSONField
 
 
 class Client(models.Model):
@@ -120,6 +122,7 @@ class Customer(models.Model):
     access_token = models.CharField(max_length=255)
     campaign = models.ForeignKey('Campaign')
     timezone = models.IntegerField(default=0)
+    meta = JSONField()
 
 
 class Session(models.Model):
