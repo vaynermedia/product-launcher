@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from apps.rocket import rules
 from django_extensions.db.fields.json import JSONField
+from django.template.loader import render_to_string
 
 
 class Client(models.Model):
@@ -33,21 +34,41 @@ class Campaign(models.Model):
     def facebook_app_id(self):
         return settings.FACEBOOK_APP_ID
 
+    def next_step(self, session):
+        if session.last_step:
+            for step in Step.objects.filter(campaign=self,
+                sort__gt=session.last_step.sort).order_by('sort'):
+                for decision in Decision.objects.filter(step=step):
+                    if decision.inquire(session):
+                        return step
+        else:
+            # If there is no last step, return the first step, which has no
+            # decisions attached to it.
+            return Step.objects.filter(campaign=self).order_by('sort')[0]
+
 
 class RefererBlock(models.Model):
     campaign = models.ForeignKey('Campaign')
     match = models.CharField(max_length=100)
 
 
+class FakeStep(object):
+    def __init__(self, campaign, template):
+        self.template = template
+        self.campaign = campaign
+
+    def render(self, session):
+        return render_to_string(self.template, {})
+
+
 class Step(models.Model):
     name = models.CharField(max_length=100)
     sort = models.PositiveIntegerField()
     campaign = models.ForeignKey('Campaign', related_name='steps')
+    templates = models.CharField(max_length=100, blank=True, null=True)
 
-    def next(self, session):
-        for d in Decision.objects.filter(step=self).order_by('sort'):
-            pass
-
+    def render(self, session):
+        pass
 
 class Decision(models.Model):
     class Rejected(Exception):

@@ -3,29 +3,48 @@ import ajax
 import facebook
 from ajax.endpoints import ModelEndpoint
 from ajax.encoders import encoder
-from apps.rocket.models import Customer
+from apps.rocket.models import Customer, Campaign
 from django.utils import simplejson as json
 
 
-class CustomerEndpoint(ModelEndpoint):
-    def can_create(self, user, record):
-        return True
+class CreateCustomer(object):
+    def new_customer(self, data):
+        customer = Customer()
+        customer.first_name = data['first_name']
+        customer.last_name = data['last_name']
+        customer.email = data['email']
+        customer.uid = int(data['uid'])
+        customer.gender = data['gender']
+        customer.age = int(data['age'])
+        customer.access_token = data['access_token']
+        customer.campaign = Campaign.objects.get(pk=int(data['campaign']))
+        customer.timezone = int(data['timezone'])
+        customer.meta = data['meta']
+        customer.save()
+        return customer
 
-    def authenticate(self, request, application, method):
-        graph = facebook.GraphAPI(request.POST['access_token'])
+    def check_access_token(self, data):
+        graph = facebook.GraphAPI(data['access_token'])
         try:
-            data = graph.get_object(request.POST['uid'])
+            result = graph.get_object(data['uid'])
         except Exception, e:
-            return False
+            raise Exception('Invalid Facebook uid provided.')
 
-        if int(data['id']) == int(request.POST['uid']):
-            return True
-        else:
-            return False
+        if int(result['id']) == int(data['uid']):
+            raise Exception('Mismatched values for Facebook uid provided.')
 
-    can_update = lambda self, user, record: False
-    can_delete = can_update
-    can_get = can_update
+    def __call__(self, request):
+        self.check_access_token(request.POST)
+        try:
+            customer = Customer.objects.get(uid=int(request.POST['uid']))
+            if customer.access_token != request.POST['access_token']:
+                customer.access_token = request.POST['access_token']
+                customer.save()
+        except:
+            customer = self.new_customer(request.POST)
+
+        sesssion = Session()
+        session.customer = customer
 
 
-ajax.endpoint.register(Customer, CustomerEndpoint)
+create_customer = CreateCustomer()
