@@ -61,6 +61,7 @@ class Step(models.Model):
     def render(self, session):
         pass
 
+
 class Decision(models.Model):
     class Rejected(Exception):
         pass
