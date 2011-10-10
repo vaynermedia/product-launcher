@@ -49,16 +49,7 @@ class Campaign(models.Model):
 
 class RefererBlock(models.Model):
     campaign = models.ForeignKey('Campaign')
-    match = models.CharField(max_length=100)
-
-
-class FakeStep(object):
-    def __init__(self, campaign, template):
-        self.template = template
-        self.campaign = campaign
-
-    def render(self, session):
-        return render_to_string(self.template, {})
+    pattern = models.CharField(max_length=100)
 
 
 class Step(models.Model):
@@ -147,5 +138,6 @@ class Customer(models.Model):
 
 
 class Session(models.Model):
+    campaign = models.ForeignKey('Campaign', blank=True, null=True)
     customer = models.ForeignKey('Customer', blank=True, null=True)
     last_step = models.ForeignKey('Step', blank=True, null=True, default=None)
